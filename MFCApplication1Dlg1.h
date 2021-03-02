@@ -33,6 +33,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
+	CRect Rect;
 	HTuple m_hWnd; //显示窗口句柄
 
 	HObject m_hImage;//图像对象
