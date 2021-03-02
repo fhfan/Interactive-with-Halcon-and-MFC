@@ -133,7 +133,7 @@ void CMFCApplication1Dlg::InitConsoleWindow()
 void CMFCApplication1Dlg::CreateImageWindow()
 {
 	HTuple HWindowID;
-	CRect Rect;
+	//CRect Rect;
 	CWnd* pWnd = GetDlgItem(IDC_PIC);
 	HWindowID = (Hlong)pWnd->m_hWnd;
 	pWnd->GetWindowRect(&Rect);
@@ -435,18 +435,18 @@ double y_base;
 //int factor = 1;
 BOOL CMFCApplication1Dlg::PreTranslateMessage(MSG* pMsg)
 {
-	POINT ptTmp;
+	CPoint ptTmp;
 	GetCursorPos(&ptTmp);//获取鼠标位置 
-	CRect Rect;
+	CRect Rect1;
 	CRect rcPIC;
 	CWnd *pPICWnd = GetDlgItem(IDC_PIC);
 	CDC *pDCPIC = pPICWnd->GetDC();
-	memset(Rect, 0, sizeof(CRect));
-	pPICWnd->ClientToScreen(Rect);
+	memset(Rect1, 0, sizeof(CRect));
+	pPICWnd->ClientToScreen(Rect1);
 	//UpdateData(TRUE);
 	//坐标转换
-	mousex = ptTmp.x - Rect.left;
-	mousey = ptTmp.y - Rect.top;
+	mousex=ptTmp.x = ptTmp.x - Rect1.left;
+	mousey=ptTmp.y = ptTmp.y - Rect1.top;
 	pPICWnd = GetDlgItem(IDC_PIC);
 	pPICWnd->GetClientRect(&rcPIC);
 	//判断鼠标是否在图像控件内 
@@ -486,7 +486,7 @@ BOOL CMFCApplication1Dlg::PreTranslateMessage(MSG* pMsg)
 			DispObj(m_hImage, HDevWindowStack::GetActive());
 			dxf_scale(&ho_Contours, 1 / dpi, &ho_ContoursScaled, &x_base, &y_base);
 			angle++;
-			dxf_transform(&ho_ContoursScaled, ptTmp.x, ptTmp.y, angle, &ho_ModelTrans);
+			dxf_transform(&ho_ContoursScaled, ptTmp.x * m_hWidth.I() / Rect.Width(), ptTmp.y * m_hHeight.I() / Rect.Height(), angle, &ho_ModelTrans);
 			DispObj(ho_ModelTrans, HDevWindowStack::GetActive());
 		}
 		else if (pMsg->wParam == 'D')            //dxf顺时针旋转
@@ -494,7 +494,7 @@ BOOL CMFCApplication1Dlg::PreTranslateMessage(MSG* pMsg)
 			DispObj(m_hImage, HDevWindowStack::GetActive());
 			dxf_scale(&ho_Contours, 1 / dpi, &ho_ContoursScaled, &x_base, &y_base);
 			angle--;
-			dxf_transform(&ho_ContoursScaled, ptTmp.x, ptTmp.y, angle, &ho_ModelTrans);
+			dxf_transform(&ho_ContoursScaled, ptTmp.x * m_hWidth.I() / Rect.Width(), ptTmp.y * m_hHeight.I() / Rect.Height(), angle, &ho_ModelTrans);
 			DispObj(ho_ModelTrans, HDevWindowStack::GetActive());
 		}
 		else if (pMsg->wParam == 'W')            //dxf放大
@@ -502,7 +502,7 @@ BOOL CMFCApplication1Dlg::PreTranslateMessage(MSG* pMsg)
 			DispObj(m_hImage, HDevWindowStack::GetActive());
 			dpi += 0.01;
 			dxf_scale(&ho_Contours, 1 / dpi, &ho_ContoursScaled, &x_base, &y_base);
-			dxf_transform(&ho_ContoursScaled, ptTmp.x, ptTmp.y, angle, &ho_ModelTrans);
+			dxf_transform(&ho_ContoursScaled, ptTmp.x * m_hWidth.I() / Rect.Width(), ptTmp.y * m_hHeight.I() / Rect.Height(), angle, &ho_ModelTrans);
 			DispObj(ho_ModelTrans, HDevWindowStack::GetActive());
 		}
 		else if (pMsg->wParam == 'S')            //dxf缩小
@@ -510,16 +510,16 @@ BOOL CMFCApplication1Dlg::PreTranslateMessage(MSG* pMsg)
 			DispObj(m_hImage, HDevWindowStack::GetActive());
 			dpi -= 0.01;
 			dxf_scale(&ho_Contours, 1 / dpi, &ho_ContoursScaled, &x_base, &y_base);
-			dxf_transform(&ho_ContoursScaled, ptTmp.x, ptTmp.y, angle, &ho_ModelTrans);
+			dxf_transform(&ho_ContoursScaled, ptTmp.x * m_hWidth.I() / Rect.Width(), ptTmp.y * m_hHeight.I() / Rect.Height(), angle, &ho_ModelTrans);
 			DispObj(ho_ModelTrans, HDevWindowStack::GetActive());
 		}
 		else if (pMsg->wParam == VK_SPACE)            //dxf平移
 		{
-			//HObject  ho_ContourCross, ho_PolygonsCross;
+			HObject  ho_ContourCross, ho_PolygonsCross;
 			DispObj(m_hImage, HDevWindowStack::GetActive());
 			dxf_scale(&ho_Contours, 1 / dpi, &ho_ContoursScaled, &x_base, &y_base);
-			dxf_transform(&ho_ContoursScaled, mousex, mousey, angle, &ho_ModelTrans);
-			//GenCrossContourXld(&ho_ContourCross, mousey, mousex, 88, 0);
+			dxf_transform(&ho_ContoursScaled, mousex * m_hWidth.I() / Rect.Width(), mousey * m_hHeight.I() / Rect.Height(), angle, &ho_ModelTrans);
+			//GenCrossContourXld(&ho_ContourCross, mousey * m_hHeight.I() / Rect.Height(), mousex * m_hWidth.I() / Rect.Width(), 88, 0);
 			//GenPolygonsXld(ho_ContourCross, &ho_PolygonsCross, "ramer", 2);
 			//if (HDevWindowStack::IsOpen())
 			//DispObj(ho_PolygonsCross, HDevWindowStack::GetActive());
